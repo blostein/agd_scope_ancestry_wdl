@@ -253,6 +253,8 @@ task ConvertPgenToBed {
 
         String? out_prefix
 
+        Int? memory_gb = 20
+
     }
 
     Int disk_size = ceil(size([pgen, pvar, psam], "GB")  * 2) + 20
