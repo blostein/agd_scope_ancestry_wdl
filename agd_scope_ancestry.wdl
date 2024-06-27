@@ -214,7 +214,7 @@ task RunScopeSupervised{
         String output_string
         Int seed
 
-        File topmed_freq
+        File? topmed_freq
 
         Int memory_gb = 20
 
