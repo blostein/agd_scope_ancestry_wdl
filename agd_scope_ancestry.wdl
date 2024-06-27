@@ -48,12 +48,14 @@ workflow VUMCscope {
             output_psam = replaced_sample_name
         }
         call PreparePlink as PreparePlink{
-            pgen_file = pgen_file,
-            pvar_file = pvar_file,
-            psam_file = ReplaceICAIdWithGrid.output_psam,
-            chromosome = chromosome,
-            plink2_LD_filter_option = plink2_LD_filter_option
-            long_range_LD_list = long_range_LD_list
+            input{
+                pgen_file = pgen_file,
+                pvar_file = pvar_file,
+                psam_file = ReplaceICAIdWithGrid.output_psam,
+                chromosome = chromosome,
+                plink2_LD_filter_option = plink2_LD_filter_option
+                long_range_LD_list = long_range_LD_list
+            }
         }
     }
     call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
