@@ -186,7 +186,7 @@ task RunScopeUnsupervised{
     Int disk_size = ceil(size([bed, bim, sam], "GB")  * 2) + 20
 
     command {
-        scope -g {plink_binary_prefix} -k {K} -seed {seed} -o {unsup_output}
+        scope -g ~{plink_binary_prefix} -k ~{K} -seed ~{seed} -o ~{unsup_output}
     }
 
     runtime {
@@ -223,7 +223,7 @@ task RunScopeSupervised{
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
     command {
-        scope -g {plink_binary_prefix} --freq {topmed_freq} -k {K} -seed {seed} -o {sup_output}
+        scope -g ~{plink_binary_prefix} --freq ~{topmed_freq} -k ~{K} -seed ~{seed} -o ~{sup_output}
     }
 
     runtime {
