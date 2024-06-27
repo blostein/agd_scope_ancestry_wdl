@@ -19,7 +19,7 @@ workflow VUMCscope {
         String target_prefix
 
         String? plink2_LD_filter_option = "--indep-pairwise 50 kb 80 0.1"
-        File long_range_LD_list
+        File long_range_ld_file
 
         File? topmed_freq
         Int? K = 4
@@ -54,7 +54,7 @@ workflow VUMCscope {
                 psam_file = ReplaceICAIdWithGrid.output_psam,
                 chromosome = chromosome,
                 plink2_LD_filter_option = plink2_LD_filter_option,
-                long_range_LD_list = long_range_LD_list    
+                 long_range_ld_file =  long_range_ld_file   
         }
     }
     call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
