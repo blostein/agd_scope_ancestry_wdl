@@ -48,14 +48,13 @@ workflow VUMCscope {
             output_psam = replaced_sample_name
         }
         call PreparePlink as PreparePlink{
-            input{
+            input:
                 pgen_file = pgen_file,
                 pvar_file = pvar_file,
                 psam_file = ReplaceICAIdWithGrid.output_psam,
                 chromosome = chromosome,
                 plink2_LD_filter_option = plink2_LD_filter_option
-                long_range_LD_list = long_range_LD_list
-            }
+                long_range_LD_list = long_range_LD_list    
         }
     }
     call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
@@ -74,24 +73,22 @@ workflow VUMCscope {
   }
 
   call RunScopeUnsupervised{    
-    input{
+    input:
         plink_binary_prefix = ConvertPgenToBed.out_prefix,
         K = K,
         output_string = target_prefix,
         seed = seed
-    }
   }
 
   if(defined(topmed_freq)){
     call RunScopeSupervised{
-        input{
+        input:
             plink_binary_prefix = ConvertPgenToBed.out_prefix,
             K = K,
             output_string = target_prefix,
             seed = seed
         }
     }
-  }
 
     if(defined(target_gcp_folder)){
         call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_one{
