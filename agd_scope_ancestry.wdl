@@ -22,7 +22,7 @@ workflow VUMCscope {
         File long_range_ld_file
 
         File? topmed_freq
-        Int? K = 4
+        Int K = 4
         Int seed 
 
         File id_map_file
