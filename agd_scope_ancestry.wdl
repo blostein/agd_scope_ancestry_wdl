@@ -74,7 +74,7 @@ workflow VUMCscope {
 
   call RunScopeUnsupervised{    
     input:
-        plink_binary_prefix = ConvertPgenToBed.out_prefix,
+        plink_binary_prefix = ConvertPgenToBed.out_string,
         K = K,
         output_string = target_prefix,
         seed = seed
@@ -83,7 +83,7 @@ workflow VUMCscope {
   if(defined(topmed_freq)){
     call RunScopeSupervised{
         input:
-            plink_binary_prefix = ConvertPgenToBed.out_prefix,
+            plink_binary_prefix = ConvertPgenToBed.out_string,
             K = K,
             output_string = target_prefix,
             seed = seed
@@ -278,6 +278,6 @@ task ConvertPgenToBed {
         File out_bed = "${out_string}.bed"
         File out_bim = "${out_string}.bim"
         File out_fam = "${out_string}.fam"
-        String out_prefix = out_string
+        String out_string = out_string
     }
 }
