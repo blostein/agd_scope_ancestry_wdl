@@ -54,7 +54,7 @@ workflow VUMCscope {
                 psam_file = ReplaceICAIdWithGrid.output_psam,
                 chromosome = chromosome,
                 plink2_LD_filter_option = plink2_LD_filter_option,
-                 long_range_ld_file =  long_range_ld_file   
+                long_range_ld_file =  long_range_ld_file   
         }
     }
     call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
