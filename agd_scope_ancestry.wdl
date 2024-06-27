@@ -210,6 +210,8 @@ task RunScopeSupervised{
         String output_string
         Int seed
 
+        File topmed_freq
+
         Int memory_gb = 20
 
         String docker = "blosteinf/scope:0.1"
