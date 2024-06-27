@@ -101,16 +101,20 @@ workflow VUMCscope {
                 target_gcp_folder = select_first([target_gcp_folder])
             }
         if(defined(topmed_freq)){
-            call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_two{
+            call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_two {
                 input:
-                    source_file1 = RunScopeSupervised.outP,
-                    source_file2 = RunScopeSupervised.outQ,
-                    source_file3 = RunScopeSupervised.outV,
+                    source_file1 = select_first([RunScopeSupervised.outP]),
+                    source_file2 = select_first([RunScopeSupervised.outQ]),
+                    source_file3 = select_first([RunScopeSupervised.outV]),
                     is_move_file = false,
                     project_id = project_id,
                     target_gcp_folder = select_first([target_gcp_folder])
+                }
             }
-        }
+    }
+    output {
+        File output_PUnsupervised = select_first([CopyFiles_one.output_file1, RunScopeSupervised.outP])
+        File output_PSupervised= select_first([CopyFiles_two.output_file1, RunScopeSupervised.outP])
     }
 }
 
