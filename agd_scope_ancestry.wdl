@@ -18,7 +18,7 @@ workflow VUMCscope {
 
         String target_prefix
 
-        String plink2_LD_filter_option = "--maf 0.01 --indep-pairwise 50 kb 80 0.1"
+        String plink2_LD_filter_option = "--maf 0.01 --indep-pairwise 50 kb 1 0.1"
         File long_range_ld_file
 
         File? topmed_freq
@@ -151,8 +151,8 @@ task PreparePlink{
       --snps-only \
       --set-all-var-ids chr@:#:\$r:\$a \
       --new-id-max-allele-len 1000 \
-      ~{plink2_LD_filter_option}
-      --exclude ~{long_range_ld_file}
+      ~{plink2_LD_filter_option} \
+      --exclude ~{long_range_ld_file} \
       --make-pgen \
       --out ~{chromosome}
   }

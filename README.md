@@ -34,7 +34,7 @@
 
 ### Highly recommended but listed as optional, has default.
 
-- plink2_LD_filter_option: Additional filtering options for plink. Highly recommend at least some to subset the number of variants going in to the analysis. Suggest: "--maf 0.01 --indep-pairwise 50 kb 80 0.1" as this is what SCOPE paper did for their UKB analysis. This is the default. 
+- plink2_LD_filter_option: Additional filtering options for plink. Highly recommend at least some to subset the number of variants going in to the analysis. Scopes UK biobank used "--maf 0.01 --indep-pairwise 50 kb 80 0.1" as this is what SCOPE paper did for their UKB analysis, but because plink2 will not allow this a step size of 1 when the KB option is used, the default here is "--maf 0.01 --indep-pairwise 50 1 0.1"
 
 - Memory usage: When using smaller SNP sets such as the UK Biobank’s PCA set (147,604 SNPs), SCOPE uses about 60 GB of memory (488,363 individuals and 147,604 SNPs). So for our 35k individuals, start with 20 and scale up if need, readjust for 250k set. You can change the parameter memory_gb for each subtask in the WDL script, including for RunScopeSupervised and RunScopeUnsupervised.
 
