@@ -18,7 +18,7 @@ workflow VUMCscope {
 
         String target_prefix
 
-        String plink2_LD_filter_option = "--maf 0.01 --indep-pairwise 50 kb 1 0.1"
+        String plink2_LD_filter_option = "--maf 0.05 --indep-pairwise 50 kb 1 0.1"
         File long_range_ld_file
 
         File? topmed_freq
@@ -261,7 +261,7 @@ task ConvertPgenToBed {
 
     }
 
-    Int disk_size = ceil(size([pgen, pvar, psam], "GB")  * 2) + 20
+    Int disk_size = ceil(size([pgen, pvar, psam], "GB")  * 2)*2 + 20
 
 
     String out_string = if defined(out_prefix) then out_prefix else basename(pgen, ".pgen")
