@@ -74,7 +74,9 @@ workflow VUMCscope {
 
   call RunScopeUnsupervised{    
     input:
-        plink_binary_prefix = ConvertPgenToBed.bed_prefix,
+        bed_file = ConvertPgenToBed.out_bed,
+        bim_file = ConvertPgenToBed.out_bim,
+        fam_file = ConvertPgenToBed.out_fam,
         K = K,
         output_string = target_prefix,
         seed = seed
@@ -83,7 +85,9 @@ workflow VUMCscope {
   if(defined(topmed_freq)){
     call RunScopeSupervised{
         input:
-            plink_binary_prefix = ConvertPgenToBed.bed_prefix,
+            bed_file = ConvertPgenToBed.out_bed,
+            bim_file = ConvertPgenToBed.out_bim,
+            fam_file = ConvertPgenToBed.out_fam,
             K = K,
             output_string = target_prefix,
             seed = seed
@@ -173,7 +177,11 @@ task PreparePlink{
 
 task RunScopeUnsupervised{
     input{
-        String plink_binary_prefix
+
+        File bed_file
+        File bim_file
+        File fam_file
+
         Int K
         String output_string
         Int seed
@@ -182,12 +190,8 @@ task RunScopeUnsupervised{
         String docker = "blosteinf/scope:0.1"
     }
 
-    String bed = plink_binary_prefix + ".bed"
-    String bim = plink_binary_prefix + ".bim"
-    String sam = plink_binary_prefix + ".sam"
-
     String unsup_output = output_string + "_unsupervised" 
-    Int disk_size = ceil(size([bed, bim, sam], "GB")  * 2) + 20
+    Int disk_size = ceil(size([bed_file, bim_file, sam_file], "GB")  * 2) + 20
 
     command {
         scope -g ~{plink_binary_prefix} -k ~{K} -seed ~{seed} -o ~{unsup_output}
@@ -209,7 +213,11 @@ task RunScopeUnsupervised{
 
 task RunScopeSupervised{
     input{
-        String plink_binary_prefix
+       
+        File bed_file
+        File bim_file
+        File fam_file
+
         Int K
         String output_string
         Int seed
@@ -220,11 +228,9 @@ task RunScopeSupervised{
 
         String docker = "blosteinf/scope:0.1"
     }
-    String sup_output = output_string + "_supervised"
 
-    File bed_file = plink_binary_prefix + ".bed"
-    File bim_file = plink_binary_prefix + ".bim"
-    File fam_file = plink_binary_prefix + ".fam"
+    String plink_binary_prefix = basename(bed_file, ".bed")
+    String sup_output = output_string + "_supervised"
 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
@@ -284,6 +290,5 @@ task ConvertPgenToBed {
         File out_bed = "${out_string}.bed"
         File out_bim = "${out_string}.bim"
         File out_fam = "${out_string}.fam"
-        String bed_prefix = "${out_string}"
     }
 }
