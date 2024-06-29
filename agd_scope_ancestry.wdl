@@ -191,7 +191,7 @@ task RunScopeUnsupervised{
     }
 
     String unsup_output = output_string + "_unsupervised" 
-    Int disk_size = ceil(size([bed_file, bim_file, sam_file], "GB")  * 2) + 20
+    Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
     command {
         scope -g ~{plink_binary_prefix} -k ~{K} -seed ~{seed} -o ~{unsup_output}
