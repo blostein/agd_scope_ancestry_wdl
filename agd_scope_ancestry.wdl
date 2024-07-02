@@ -190,7 +190,7 @@ task RunScopeUnsupervised{
         String docker = "blosteinf/scope:0.1"
     }
 
-    String plink_binary_prefix = basename(bed_file, ".bed")
+    String plink_binary_prefix =  "/cromwell_root/" + basename(bed_file, ".bed")
     String unsup_output = output_string + "_unsupervised" 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
@@ -230,13 +230,15 @@ task RunScopeSupervised{
         String docker = "blosteinf/scope:0.1"
     }
 
-    String plink_binary_prefix = basename(bed_file, ".bed")
+    String plink_binary_prefix = "/cromwell_root/" + basename(bed_file, ".bed")
     String sup_output = output_string + "_supervised"
 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
     command {
-        scope -g ~{plink_binary_prefix} --freq ~{topmed_freq} -k ~{K} -seed ~{seed} -o ~{sup_output}
+        ls ./ 
+        ls /cromwell_root/
+        scope -g ~{plink_binary_prefix} -freq ~{topmed_freq} -k ~{K} -seed ~{seed} -o ~{sup_output}
     }
 
     runtime {
