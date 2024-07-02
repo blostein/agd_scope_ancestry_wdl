@@ -13,8 +13,20 @@
     - did this manually -- commented out the specified lines 
 - Docker build approach: https://www.jmoisio.eu/en/blog/2020/06/01/building-cpp-containers-using-docker-and-cmake/
     docker build -t blosteinf/scope:0.1 .
+PROBLEM: wrong architecture on my M1 laptop, see issue here: https://support.terra.bio/hc/en-us/community/posts/5877050265115-docker-run-exec-format-error
+SOLUTION: multiplatform build, see: https://blog.jaimyn.dev/how-to-build-multi-architecture-docker-images-on-an-m1-mac/ AND
+https://github.com/moby/buildkit/issues/2343
+https://stackoverflow.com/questions/20481225/how-can-i-use-a-local-image-as-the-base-image-with-a-dockerfile
+
+
+    docker buildx build --platform linux/amd64 -t blosteinf/scope:0.1 .
     docker run -it blosteinf/scope:0.1
     docker push blosteinf/scope:0.1
+
+    docker buildx create --use
+    docker buildx build --platform linux/amd64,linux/arm64 --push -t blostein/scope:0.1 .
+    docker buildx build --push --tag blosteinf/scope:0.1 --platform=linux/arm64,linux/amd64 .
+    
     Now it exists here: https://hub.docker.com/r/blosteinf/scope
 
 
