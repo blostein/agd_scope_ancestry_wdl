@@ -236,7 +236,7 @@ task RunScopeSupervised{
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
     command {
-        ls ./ 
+        ls .
         ls /cromwell_root/
         scope -g ~{plink_binary_prefix} -freq ~{topmed_freq} -k ~{K} -seed ~{seed} -o ~{sup_output}
     }
