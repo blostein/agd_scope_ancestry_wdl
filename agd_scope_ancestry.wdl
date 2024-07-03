@@ -154,6 +154,7 @@ task PreparePlink{
       --pvar ~{pvar_file} \
       --psam ~{psam_file} \
       --snps-only \
+      --const-fid \
       --set-all-var-ids chr@:#:\$r:\$a \
       --new-id-max-allele-len 1000 \
       ~{plink2_LD_filter_option} \
