@@ -192,9 +192,9 @@ task RunScopeUnsupervised{
     }
 
     String plink_binary_prefix =  basename(bed_file, ".bed")
-    relocated_bed= plink_binary_prefix + ".bed"
-    relocated_bim= plink_binary_prefix + ".bim"
-    relocated_fam= plink_binary_prefix + ".fam"
+    String relocated_bed = plink_binary_prefix + ".bed"
+    String relocated_bim = plink_binary_prefix + ".bim"
+    String relocated_fam = plink_binary_prefix + ".fam"
 
     String unsup_output = output_string + "_unsupervised" 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
@@ -239,9 +239,9 @@ task RunScopeSupervised{
     }
 
     String plink_binary_prefix = basename(bed_file, ".bed")
-    relocated_bed= plink_binary_prefix + ".bed"
-    relocated_bim= plink_binary_prefix + ".bim"
-    relocated_fam= plink_binary_prefix + ".fam"
+    String relocated_bed= plink_binary_prefix + ".bed"
+    String relocated_bim= plink_binary_prefix + ".bim"
+    String relocated_fam= plink_binary_prefix + ".fam"
 
     String sup_output = output_string + "_supervised"
 
