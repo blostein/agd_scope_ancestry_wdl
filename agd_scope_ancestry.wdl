@@ -18,7 +18,9 @@ workflow VUMCscope {
 
         String target_prefix
 
-        String plink2_LD_filter_option = "--maf 0.05 --indep-pairwise 50000 200 0.1"
+        String plink2_maf_filter= "--maf 0.05"
+
+        String plink2_LD_filter_option = "--indep-pairwise 50000 200 0.1"
         File long_range_ld_file
 
         File? topmed_freq
@@ -135,6 +137,7 @@ task PreparePlink{
 
     File long_range_ld_file
     String plink2_LD_filter_option
+    String plink2_maf_filter
 
     Int memory_gb = 20
 
@@ -143,9 +146,10 @@ task PreparePlink{
 
   Int disk_size = ceil(size([pgen_file, psam_file, pvar_file], "GB")  * 2) + 20
 
-  String new_pgen = chromosome + ".pgen"
-  String new_pvar = chromosome + ".pvar"
-  String new_psam = chromosome + ".psam"
+  String new_pgen = chromosome + "_trimmed.pgen"
+  String new_pvar = chromosome + "_trimmed.pvar"
+  String new_psam = chromosome + "_trimmed.psam"
+  String out_prefix = chromosome + "_trimmed"
 
 
   command {
@@ -153,14 +157,38 @@ task PreparePlink{
       --pgen ~{pgen_file} \
       --pvar ~{pvar_file} \
       --psam ~{psam_file} \
+      ~{plink2_maf_filter} \
       --snps-only \
+      --make-pgen \
+      --out maf_filtered
+    
+    plink2 \ 
+        --pgen maf_filtered.pgen \
+        --pvar maf_filtered.pvar \
+        --psam maf_filtered.psam \
+        --exclude region ~{long_range_ld_file} \
+        --make-pgen \
+        --out maf_filtered_longrange
+    
+    plink2 \
+      --pgen maf_filtered_longrange.pgen \
+      --pvar maf_filtered_longrange.pvar \
+      --psam maf_filtered_longrange.psam \
       --const-fid \
       --set-all-var-ids chr@:#:\$r:\$a \
       --new-id-max-allele-len 1000 \
-      ~{plink2_LD_filter_option} \
-      --exclude ~{long_range_ld_file} \
-      --make-pgen \
-      --out ~{chromosome}
+      ~{plink2_LD_filter_option}
+
+    plink2 \
+        --pgen maf_filtered_longrange.pgen \
+        --pvar maf_filtered_longrange.pvar \
+        --psam maf_filtered_longrange.psam \
+        --const-fid \
+        --set-all-var-ids chr@:#:\$r:\$a \
+        --new-id-max-allele-len 1000 \
+        --extract maf_filtered.prune.in \
+        --make-pgen \
+        --out ~{out_prefix}
   }
 
   runtime {

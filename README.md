@@ -42,7 +42,7 @@ https://stackoverflow.com/questions/20481225/how-can-i-use-a-local-image-as-the-
     - This is what you will use for input chromosome, source_{pgen/pvar/psam}_files
 - A random seed 
 - The GRID IID conversion file: e.g. "gs://working-set-redeposit/ica-agd/cohort_001/20240303_agd35k_ica_primary_eligible.txt"
-- A file with long range LD variants to exclude. I used the one provided by scope, for their UKbiobank analysis, e.g.: "gs://fc-secure-540f27be-97ea-4ffd-adb7-c195458eb278/scope_ancestry_estimation/long_range_ld.filter"
+- A file with long range LD variants to exclude. I used the GrCH38 positions listed here: https://genome.sph.umich.edu/wiki/Regions_of_high_linkage_disequilibrium_(LD)
 
 ### Highly recommended but listed as optional, has default.
 
