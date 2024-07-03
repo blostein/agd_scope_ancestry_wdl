@@ -162,7 +162,7 @@ task PreparePlink{
       --make-pgen \
       --out maf_filtered
     
-    plink2 \ 
+    plink2 \
         --pgen maf_filtered.pgen \
         --pvar maf_filtered.pvar \
         --psam maf_filtered.psam \
