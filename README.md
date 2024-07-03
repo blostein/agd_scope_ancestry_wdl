@@ -59,3 +59,5 @@ https://stackoverflow.com/questions/20481225/how-can-i-use-a-local-image-as-the-
    - The frequency file is a tab-delimited file with the following columns: CHR SNP CLST A1 A2 MAF MAC NCHROBS 
    - You can see an example of how I generated this using the thousand genomes project (TGP) data in the TGP_supervised_frequencies directiory, script download_prune_topmed.sh. This script downloads the TGP dta following the script provided in the SCOPE github real_data github directory. Because that TGP was on a different chromosome build than AGD, the tool liftOver was used to convert to the AGD build (GCh38). Then the within population frequencies were calculated 
 
+
+Note: The WDL script has a hard time locating the localized files, so I used symbolic links, a la https://support.terra.bio/hc/en-us/community/posts/360077616291-Cromwell-question-localization-of-reference-files

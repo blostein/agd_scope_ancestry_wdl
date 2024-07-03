@@ -91,6 +91,7 @@ workflow VUMCscope {
             K = K,
             output_string = target_prefix,
             seed = seed
+            topmed_freq = topmed_freq
         }
     }
 
@@ -190,11 +191,18 @@ task RunScopeUnsupervised{
         String docker = "blosteinf/scope:0.1"
     }
 
-    String plink_binary_prefix =  "/cromwell_root/" + basename(bed_file, ".bed")
+    String plink_binary_prefix =  basename(bed_file, ".bed")
+    relocated_bed= plink_binary_prefix + ".bed"
+    relocated_bim= plink_binary_prefix + ".bim"
+    relocated_fam= plink_binary_prefix + ".fam"
+
     String unsup_output = output_string + "_unsupervised" 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
     command {
+        ln ~{bed_file} ./~{relocated_bed}
+        ln ~{bim_file} ./~{relocated_bim}
+        ln ~{fam_file} ./~{relocated_fam}
         scope -g ~{plink_binary_prefix} -k ~{K} -seed ~{seed} -o ~{unsup_output}
     }
 
@@ -230,14 +238,19 @@ task RunScopeSupervised{
         String docker = "blosteinf/scope:0.1"
     }
 
-    String plink_binary_prefix = "/cromwell_root/" + basename(bed_file, ".bed")
+    String plink_binary_prefix = basename(bed_file, ".bed")
+    relocated_bed= plink_binary_prefix + ".bed"
+    relocated_bim= plink_binary_prefix + ".bim"
+    relocated_fam= plink_binary_prefix + ".fam"
+
     String sup_output = output_string + "_supervised"
 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
     command {
-        ls .
-        ls /cromwell_root/
+        ln ~{bed_file} ./~{relocated_bed}
+        ln ~{bim_file} ./~{relocated_bim}
+        ln ~{fam_file} ./~{relocated_fam}
         scope -g ~{plink_binary_prefix} -freq ~{topmed_freq} -k ~{K} -seed ~{seed} -o ~{sup_output}
     }
 
