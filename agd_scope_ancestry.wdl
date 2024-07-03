@@ -18,7 +18,7 @@ workflow VUMCscope {
 
         String target_prefix
 
-        String plink2_LD_filter_option = "--maf 0.05 --indep-pairwise 50 kb 1 0.1"
+        String plink2_LD_filter_option = "--maf 0.05 --indep-pairwise 50000 200 0.1"
         File long_range_ld_file
 
         File? topmed_freq
@@ -187,7 +187,7 @@ task RunScopeUnsupervised{
         String output_string
         Int seed
 
-        Int memory_gb = 20
+        Int memory_gb = 60
         String docker = "blosteinf/scope:0.1"
     }
 
@@ -233,7 +233,7 @@ task RunScopeSupervised{
 
         File? topmed_freq
 
-        Int memory_gb = 20
+        Int memory_gb = 60
 
         String docker = "blosteinf/scope:0.1"
     }
