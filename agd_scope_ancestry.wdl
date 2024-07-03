@@ -186,7 +186,7 @@ task PreparePlink{
         --const-fid \
         --set-all-var-ids chr@:#:\$r:\$a \
         --new-id-max-allele-len 1000 \
-        --extract maf_filtered.prune.in \
+        --extract maf_filtered_longrange.prune.in \
         --make-pgen \
         --out ~{out_prefix}
   }
