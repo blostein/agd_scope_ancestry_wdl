@@ -18,7 +18,7 @@ workflow VUMCscope {
 
         String target_prefix
 
-        String? plink2_maf_filter= "--maf 0.05"
+        String? plink2_maf_filter = "--maf 0.05"
 
         String? plink2_LD_filter_option = "--indep-pairwise 50000 200 0.1"
         File long_range_ld_file
@@ -136,8 +136,8 @@ task PreparePlink{
     String chromosome
 
     File long_range_ld_file
-    String plink2_LD_filter_option
-    String plink2_maf_filter
+    String? plink2_LD_filter_option = "--indep-pairwise 50000 200 0.1"
+    String? plink2_maf_filter = "--maf 0.05"
 
     Int memory_gb = 20
 
