@@ -90,7 +90,7 @@ workflow VUMCscope {
             fam_file = ConvertPgenToBed.out_fam,
             K = K,
             output_string = target_prefix,
-            seed = seed
+            seed = seed,
             topmed_freq = topmed_freq
         }
     }
