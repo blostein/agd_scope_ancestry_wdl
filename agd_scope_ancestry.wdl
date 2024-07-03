@@ -166,7 +166,7 @@ task PreparePlink{
         --pgen maf_filtered.pgen \
         --pvar maf_filtered.pvar \
         --psam maf_filtered.psam \
-        --exclude region ~{long_range_ld_file} \
+        --exclude range ~{long_range_ld_file} \
         --make-pgen \
         --out maf_filtered_longrange
     
