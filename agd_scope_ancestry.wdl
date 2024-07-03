@@ -18,9 +18,9 @@ workflow VUMCscope {
 
         String target_prefix
 
-        String plink2_maf_filter= "--maf 0.05"
+        String? plink2_maf_filter= "--maf 0.05"
 
-        String plink2_LD_filter_option = "--indep-pairwise 50000 200 0.1"
+        String? plink2_LD_filter_option = "--indep-pairwise 50000 200 0.1"
         File long_range_ld_file
 
         File? topmed_freq
