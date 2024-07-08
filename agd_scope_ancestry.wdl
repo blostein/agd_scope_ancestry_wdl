@@ -225,7 +225,7 @@ task RunScopeUnsupervised{
     String relocated_bim = plink_binary_prefix + ".bim"
     String relocated_fam = plink_binary_prefix + ".fam"
 
-    String unsup_output = output_string + "_unsupervised" 
+    String unsup_output = output_string + "_unsupervised_" 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
     command {
@@ -233,6 +233,7 @@ task RunScopeUnsupervised{
         ln ~{bim_file} ./~{relocated_bim}
         ln ~{fam_file} ./~{relocated_fam}
         scope -g ~{plink_binary_prefix} -k ~{K} -seed ~{seed} -o ~{unsup_output}
+        ls
     }
 
     runtime {
@@ -243,9 +244,9 @@ task RunScopeUnsupervised{
   }
 
     output {
-        File outP= "${unsup_output}_Phat.txt"
-        File outQ= "${unsup_output}_Qhat.txt"
-        File outV= "${unsup_output}_V.txt"
+        File outP= "${unsup_output}Phat.txt"
+        File outQ= "${unsup_output}Qhat.txt"
+        File outV= "${unsup_output}V.txt"
     }
 }
 
@@ -272,7 +273,7 @@ task RunScopeSupervised{
     String relocated_bim= plink_binary_prefix + ".bim"
     String relocated_fam= plink_binary_prefix + ".fam"
 
-    String sup_output = output_string + "_supervised"
+    String sup_output = output_string + "_supervised_"
 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
@@ -281,6 +282,7 @@ task RunScopeSupervised{
         ln ~{bim_file} ./~{relocated_bim}
         ln ~{fam_file} ./~{relocated_fam}
         scope -g ~{plink_binary_prefix} -freq ~{topmed_freq} -k ~{K} -seed ~{seed} -o ~{sup_output}
+        ls
     }
 
     runtime {
@@ -291,9 +293,9 @@ task RunScopeSupervised{
   }
 
     output {
-        File outP= "${sup_output}_Phat.txt"
-        File outQ= "${sup_output}_Qhat.txt"
-        File outV= "${sup_output}_V.txt"
+        File outP= "${sup_output}Phat.txt"
+        File outQ= "${sup_output}Qhat.txt"
+        File outV= "${sup_output}V.txt"
     }
 
 }
