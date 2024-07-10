@@ -334,9 +334,9 @@ task PreparePlinkSupervised{
     }
 
     output {
-        File out_bed = new_bed
-        File out_bim = new_bim
-        File out_fam = new_fam
+        File out_bed = "~{new_bed}"
+        File out_bim = "~{new_bim}"
+        File out_fam = "~{new_fam}"
         String out_prefix = out_string
     }
 
