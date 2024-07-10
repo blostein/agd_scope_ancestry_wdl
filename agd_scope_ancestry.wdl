@@ -304,6 +304,7 @@ task PreparePlinkSupervised{
         File variant_list 
         String? out_string = "variant_filtered"
 
+        String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
     }
 
   Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
