@@ -54,9 +54,7 @@ workflow VUMCscope {
                 pgen_file = pgen_file,
                 pvar_file = pvar_file,
                 psam_file = ReplaceICAIdWithGrid.output_psam,
-                chromosome = chromosome,
-                plink2_LD_filter_option = plink2_LD_filter_option,
-                long_range_ld_file =  long_range_ld_file   
+                chromosome = chromosome, 
         }
     }
     call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
@@ -74,26 +72,50 @@ workflow VUMCscope {
         psam = MergePgenFiles.output_psam_file, 
   }
 
-  call RunScopeUnsupervised{    
+  call PreparePlinkUnsupervised{
     input:
         bed_file = ConvertPgenToBed.out_bed,
         bim_file = ConvertPgenToBed.out_bim,
         fam_file = ConvertPgenToBed.out_fam,
+        long_range_ld_file = long_range_ld_file,
+        plink2_LD_filter_option = plink2_LD_filter_option
+  }
+
+  call RunScopeUnsupervised{    
+    input:
+        bed_file = PreparePlinkUnsupervised.out_bed,
+        bim_file = PreparePlinkUnsupervised.out_bim,
+        fam_file = PreparePlinkUnsupervised.out_fam,
         K = K,
         output_string = target_prefix,
         seed = seed
   }
 
   if(defined(topmed_freq)){
-    call RunScopeSupervised{
+
+    call QCAllelesBim{
+        input:
+            bim_file = ConvertPgenToBed.out_bim,
+            freq_file = topmed_freq
+    }
+
+    call PreparePlinkSupervised{
         input:
             bed_file = ConvertPgenToBed.out_bed,
             bim_file = ConvertPgenToBed.out_bim,
             fam_file = ConvertPgenToBed.out_fam,
+            variant_list = QCAllelesBim.out_variants
+    }
+
+    call RunScopeSupervised{
+        input:
+            bed_file = PreparePlinkSupervised.out_bed,
+            bim_file = PreparePlinkSupervised.out_bim,
+            fam_file = PreparePlinkSupervised.out_fam,
             K = K,
             output_string = target_prefix,
             seed = seed,
-            topmed_freq = topmed_freq
+            topmed_freq = QCAllelesBim.out_frq
         }
     }
 
@@ -135,8 +157,6 @@ task PreparePlink{
 
     String chromosome
 
-    File long_range_ld_file
-    String? plink2_LD_filter_option = "--indep-pairwise 50000 80 0.1"
     String? plink2_maf_filter = "--maf 0.01"
 
     Int memory_gb = 20
@@ -146,10 +166,10 @@ task PreparePlink{
 
   Int disk_size = ceil(size([pgen_file, psam_file, pvar_file], "GB")  * 2) + 20
 
-  String new_pgen = chromosome + "_trimmed.pgen"
-  String new_pvar = chromosome + "_trimmed.pvar"
-  String new_psam = chromosome + "_trimmed.psam"
-  String out_prefix = chromosome + "_trimmed"
+  String new_pgen = chromosome + "_maf.pgen"
+  String new_pvar = chromosome + "_maf.pvar"
+  String new_psam = chromosome + "_maf.psam"
+  String out_prefix = chromosome + "_maf"
 
 
   command {
@@ -160,29 +180,71 @@ task PreparePlink{
       ~{plink2_maf_filter} \
       --snps-only \
       --make-pgen \
-      --out maf_filtered
+      --out ~{out_prefix}
+    
+  }
+
+  runtime {
+    docker: docker
+    preemptible: 1
+    disks: "local-disk " + disk_size + " HDD"
+    memory: memory_gb + " GiB"
+  }
+
+  output {
+    File output_pgen_file = new_pgen
+    File output_pvar_file = new_pvar
+    File output_psam_file = new_psam
+  }
+}
+
+
+task PreparePlinkUnsupervised{
+  input {
+    File bed_file
+    File bim_file
+    File fam_file 
+
+    File long_range_ld_file
+    String? plink2_LD_filter_option = "--indep-pairwise 50000 80 0.1"
+    String? out_string = "ld_filtered"
+
+    Int memory_gb = 20
+
+    String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
+  }
+
+  Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
+
+  String new_bed = out_string + ".bed"
+  String new_bim = out_string + ".bim"
+  String new_fam= out_string + ".fam"
+  String out_prefix = out_string
+
+
+  command {
     
     plink2 \
-        --pgen maf_filtered.pgen \
-        --pvar maf_filtered.pvar \
-        --psam maf_filtered.psam \
+        --bed ~{bed_file} \
+        --bim ~{bim_file} \
+        --fam ~{fam_file} \
         --exclude range ~{long_range_ld_file} \
-        --make-pgen \
+        --make-bed \
         --out maf_filtered_longrange
     
     plink2 \
-      --pgen maf_filtered_longrange.pgen \
-      --pvar maf_filtered_longrange.pvar \
-      --psam maf_filtered_longrange.psam \
+      --bed maf_filtered_longrange.bed \
+      --bim maf_filtered_longrange.bim \
+      --fam maf_filtered_longrange.fam \
       --const-fid \
       --set-all-var-ids chr@:#:\$r:\$a \
       --new-id-max-allele-len 1000 \
       ~{plink2_LD_filter_option}
 
     plink2 \
-        --pgen maf_filtered_longrange.pgen \
-        --pvar maf_filtered_longrange.pvar \
-        --psam maf_filtered_longrange.psam \
+        --bed maf_filtered_longrange.bed \
+        --bim maf_filtered_longrange.bim \
+        --fam maf_filtered_longrange.fam \
         --const-fid \
         --set-all-var-ids chr@:#:\$r:\$a \
         --new-id-max-allele-len 1000 \
@@ -199,10 +261,82 @@ task PreparePlink{
   }
 
   output {
-    File output_pgen_file = new_pgen
-    File output_pvar_file = new_pvar
-    File output_psam_file = new_psam
+    File out_bed = new_bed
+    File out_bim = new_bim
+    File out_fam = new_fam
   }
+}
+
+task QCAllelesBim{
+    input {
+        File bim_file
+        File freq_file
+
+        String docker = "blosteinf/r_utils_terra:0.1"
+    }
+
+    Int disk_size = ceil(size([bim_file, freq_file], "GB")  * 2) + 20
+    Int memory_gb = 20
+
+    command {
+        Rscript ./scripts/qc_alleles_bim.R --in_freq ~{freq_file} --in_bim ~{bim_file} 
+    }
+
+    runtime {
+        docker: docker
+        preemptible: 1
+        disks: "local-disk " + disk_size + " HDD"
+        memory: memory_gb + " GiB"
+    }
+
+    output {
+        File out_frq = "corrected_freq.frq"
+        File out_variants = "variants_to_extract.txt"
+    }
+}
+
+task PreparePlinkSupervised{
+    input { 
+        File bed_file
+        File bim_file
+        File fam_file 
+
+        File variant_list 
+    }
+  Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
+
+  String new_bed = out_string + ".bed"
+  String new_bim = out_string + ".bim"
+  String new_fam= out_string + ".fam"
+  String out_prefix = out_string
+
+  command { 
+    plink2 \
+        --bed ~{bed_file} \
+        --bim ~{bim_file} \
+        --fam ~{fam_file} \
+        --const-fid \
+        --set-all-var-ids chr@:#:\$r:\$a \
+        --new-id-max-allele-len 1000 \
+        --extract ~{variant_list} \
+        --make-bed \
+        --out ~{out_prefix}
+  }
+
+    runtime {
+        docker: docker
+        preemptible: 1
+        disks: "local-disk " + disk_size + " HDD"
+        memory: memory_gb + " GiB"
+    }
+
+    output {
+        File out_bed = new_bed
+        File out_bim = new_bim
+        File out_fam = new_fam
+        String out_prefix = out_prefix
+    }
+
 }
 
 task RunScopeUnsupervised{
@@ -297,7 +431,6 @@ task RunScopeSupervised{
         File outQ= "${sup_output}Qhat.txt"
         File outV= "${sup_output}V.txt"
     }
-
 }
 
 task ConvertPgenToBed {
