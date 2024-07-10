@@ -334,9 +334,9 @@ task PreparePlinkSupervised{
     }
 
     output {
-        File out_bed = "~{new_bed}"
-        File out_bim = "~{new_bim}"
-        File out_fam = "~{new_fam}"
+        File out_bed = new_bed
+        File out_bim = new_bim
+        File out_fam = new_fam
         String out_prefix = out_string
     }
 
@@ -439,25 +439,24 @@ task RunScopeSupervised{
         scope -g ~{plink_binary_prefix} -freq ~{topmed_freq} -k ~{K} -seed ~{seed} -o ~{sup_output}
         ls
 
-        awk '
-        {
-            for (i=1; i<=NF; i++)  {
-                a[NR,i] = $i
-            }
+        awk '{
+        for (i=1; i<=NF; i++)  {
+            a[NR,i] = $i
         }
-        NF>p { p = NF }
-        END {    
-            for(j=1; j<=p; j++) {
-                str=a[1,j]
-                for(i=2; i<=NR; i++){
-                    str=str" "a[i,j];
-                }
-                print str
-            }
-        }' ~{unsup_output}Qhat.txt > transposed_Qhat.txt
-
-        cut -f2 ./~{relocated_fam} | paste - transposed_Qhat.txt > ~{unsup_output}Qhat.txt
     }
+    NF>p { p = NF }
+    END {    
+        for(j=1; j<=p; j++) {
+            str=a[1,j]
+            for(i=2; i<=NR; i++){
+                str=str" "a[i,j];
+            }
+            print str
+        }
+    }' ~{sup_output}Qhat.txt > transposed_Qhat.txt
+
+    cut -f2 ./~{relocated_fam} | paste - transposed_Qhat.txt > ~{sup_output}Qhat.txt
+}
 
     runtime {
         docker: docker
