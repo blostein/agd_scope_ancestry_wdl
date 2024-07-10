@@ -304,6 +304,8 @@ task PreparePlinkSupervised{
         File variant_list 
     }
   Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
+  Int memory_gb = 20
+
 
   String new_bed = out_string + ".bed"
   String new_bim = out_string + ".bim"
