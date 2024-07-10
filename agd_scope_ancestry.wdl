@@ -365,31 +365,14 @@ task RunScopeUnsupervised{
     String unsup_output = output_string + "_unsupervised_" 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
-    command {
+    command <<<
         ln ~{bed_file} ./~{relocated_bed}
         ln ~{bim_file} ./~{relocated_bim}
         ln ~{fam_file} ./~{relocated_fam}
         scope -g ~{plink_binary_prefix} -k ~{K} -seed ~{seed} -o ~{unsup_output}
-        
-        awk '
-        {
-            for (i=1; i<=NF; i++)  {
-                a[NR,i] = $i
-            }
-        }
-        NF>p { p = NF }
-        END {    
-            for(j=1; j<=p; j++) {
-                str=a[1,j]
-                for(i=2; i<=NR; i++){
-                    str=str" "a[i,j];
-                }
-                print str
-            }
-        }' ~{unsup_output}Qhat.txt > transposed_Qhat.txt
-
+        awk '{ for (i=1; i<=NF; i++) { a[NR,i] = $i } } NF>p { p = NF } END { for(j=1; j<=p; j++) { str=a[1,j]; for(i=2; i<=NR; i++) { str=str" "a[i,j]; } print str } }' ~{unsup_output}Qhat.txt > transposed_Qhat.txt
         cut -f2 ./~{relocated_fam} | paste - transposed_Qhat.txt > ~{unsup_output}Qhat.txt
-    }
+    >>>
 
     runtime {
         docker: docker
@@ -432,31 +415,15 @@ task RunScopeSupervised{
 
     Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
 
-    command {
+    command <<<
         ln ~{bed_file} ./~{relocated_bed}
         ln ~{bim_file} ./~{relocated_bim}
         ln ~{fam_file} ./~{relocated_fam}
         scope -g ~{plink_binary_prefix} -freq ~{topmed_freq} -k ~{K} -seed ~{seed} -o ~{sup_output}
         ls
-
-        awk '{
-        for (i=1; i<=NF; i++)  {
-            a[NR,i] = $i
-        }
-    }
-    NF>p { p = NF }
-    END {    
-        for(j=1; j<=p; j++) {
-            str=a[1,j]
-            for(i=2; i<=NR; i++){
-                str=str" "a[i,j];
-            }
-            print str
-        }
-    }' ~{sup_output}Qhat.txt > transposed_Qhat.txt
-
-    cut -f2 ./~{relocated_fam} | paste - transposed_Qhat.txt > ~{sup_output}Qhat.txt
-}
+        awk '{ for (i=1; i<=NF; i++) { a[NR,i] = $i } } NF>p { p = NF } END { for(j=1; j<=p; j++) { str=a[1,j]; for(i=2; i<=NR; i++) { str=str" "a[i,j]; } print str } }' ~{sup_output}Qhat.txt > transposed_Qhat.txt
+        cut -f2 ./~{relocated_fam} | paste - transposed_Qhat.txt > ~{sup_output}Qhat.txt
+    >>>
 
     runtime {
         docker: docker
