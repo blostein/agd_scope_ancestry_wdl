@@ -270,7 +270,7 @@ task PreparePlinkUnsupervised{
 task QCAllelesBim{
     input {
         File bim_file
-        File freq_file
+        File? freq_file
 
         String docker = "blosteinf/r_utils_terra:0.1"
     }
