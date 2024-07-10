@@ -302,15 +302,16 @@ task PreparePlinkSupervised{
         File fam_file 
 
         File variant_list 
+        String? out_string = "variant_filtered"
+
     }
+
   Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
   Int memory_gb = 20
-
 
   String new_bed = out_string + ".bed"
   String new_bim = out_string + ".bim"
   String new_fam= out_string + ".fam"
-  String out_prefix = out_string
 
   command { 
     plink2 \
@@ -322,7 +323,7 @@ task PreparePlinkSupervised{
         --new-id-max-allele-len 1000 \
         --extract ~{variant_list} \
         --make-bed \
-        --out ~{out_prefix}
+        --out ~{out_string}
   }
 
     runtime {
@@ -336,7 +337,7 @@ task PreparePlinkSupervised{
         File out_bed = new_bed
         File out_bim = new_bim
         File out_fam = new_fam
-        String out_prefix = out_prefix
+        String out_prefix = out_string
     }
 
 }
@@ -369,7 +370,25 @@ task RunScopeUnsupervised{
         ln ~{bim_file} ./~{relocated_bim}
         ln ~{fam_file} ./~{relocated_fam}
         scope -g ~{plink_binary_prefix} -k ~{K} -seed ~{seed} -o ~{unsup_output}
-        ls
+        
+        awk '
+        {
+            for (i=1; i<=NF; i++)  {
+                a[NR,i] = $i
+            }
+        }
+        NF>p { p = NF }
+        END {    
+            for(j=1; j<=p; j++) {
+                str=a[1,j]
+                for(i=2; i<=NR; i++){
+                    str=str" "a[i,j];
+                }
+                print str
+            }
+        }' ~{unsup_output}Qhat.txt > transposed_Qhat.txt
+
+        cut -f2 ./~{relocated_fam} | paste - transposed_Qhat.txt > ~{unsup_output}Qhat.txt
     }
 
     runtime {
@@ -419,6 +438,25 @@ task RunScopeSupervised{
         ln ~{fam_file} ./~{relocated_fam}
         scope -g ~{plink_binary_prefix} -freq ~{topmed_freq} -k ~{K} -seed ~{seed} -o ~{sup_output}
         ls
+
+        awk '
+        {
+            for (i=1; i<=NF; i++)  {
+                a[NR,i] = $i
+            }
+        }
+        NF>p { p = NF }
+        END {    
+            for(j=1; j<=p; j++) {
+                str=a[1,j]
+                for(i=2; i<=NR; i++){
+                    str=str" "a[i,j];
+                }
+                print str
+            }
+        }' ~{unsup_output}Qhat.txt > transposed_Qhat.txt
+
+        cut -f2 ./~{relocated_fam} | paste - transposed_Qhat.txt > ~{unsup_output}Qhat.txt
     }
 
     runtime {
