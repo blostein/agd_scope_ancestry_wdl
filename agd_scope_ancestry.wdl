@@ -179,6 +179,9 @@ task PreparePlink{
       --psam ~{psam_file} \
       ~{plink2_maf_filter} \
       --snps-only \
+      --const-fid \
+      --set-all-var-ids chr@:#:\$r:\$a \
+      --new-id-max-allele-len 1000 \
       --make-pgen \
       --out ~{out_prefix}
     
@@ -236,20 +239,14 @@ task PreparePlinkUnsupervised{
       --bed maf_filtered_longrange.bed \
       --bim maf_filtered_longrange.bim \
       --fam maf_filtered_longrange.fam \
-      --const-fid \
-      --set-all-var-ids chr@:#:\$r:\$a \
-      --new-id-max-allele-len 1000 \
       ~{plink2_LD_filter_option}
 
     plink2 \
         --bed maf_filtered_longrange.bed \
         --bim maf_filtered_longrange.bim \
         --fam maf_filtered_longrange.fam \
-        --const-fid \
-        --set-all-var-ids chr@:#:\$r:\$a \
-        --new-id-max-allele-len 1000 \
         --extract plink2.prune.in \
-        --make-pgen \
+        --make-bed \
         --out ~{out_prefix}
   }
 
@@ -319,9 +316,6 @@ task PreparePlinkSupervised{
         --bed ~{bed_file} \
         --bim ~{bim_file} \
         --fam ~{fam_file} \
-        --const-fid \
-        --set-all-var-ids chr@:#:\$r:\$a \
-        --new-id-max-allele-len 1000 \
         --extract ~{variant_list} \
         --make-bed \
         --out ~{out_string}
