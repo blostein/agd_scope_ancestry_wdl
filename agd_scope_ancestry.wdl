@@ -276,8 +276,8 @@ task QCAllelesBim{
     Int memory_gb = 20
 
     command {
-        ls
-        Rscript /home/r-environment/scripts/qc_alleles_bim.R --in_freq ~{freq_file} --in_bim ~{bim_file} 
+        ls /home/r-environment/scripts/
+        Rscript /home/r-environment/scripts/allele_qc.R --in_freq ~{freq_file} --in_bim ~{bim_file} 
     }
 
     runtime {
