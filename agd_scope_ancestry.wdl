@@ -54,7 +54,7 @@ workflow VUMCscope {
                 pgen_file = pgen_file,
                 pvar_file = pvar_file,
                 psam_file = ReplaceICAIdWithGrid.output_psam,
-                File long_range_ld_file = long_range_ld_file,
+                long_range_ld_file = long_range_ld_file,
                 plink2_maf_filter = plink2_maf_filter,
                 plink2_LD_filter_option = plink2_LD_filter_option,
                 chromosome = chromosome 
