@@ -57,7 +57,7 @@ workflow VUMCscope {
                 File long_range_ld_file = long_range_ld_file,
                 plink2_maf_filter = plink2_maf_filter,
                 plink2_LD_filter_option = plink2_LD_filter_option,
-                chromosome = chromosome, 
+                chromosome = chromosome 
         }
     }
     call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
