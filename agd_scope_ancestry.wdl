@@ -72,20 +72,11 @@ workflow VUMCscope {
         psam = MergePgenFiles.output_psam_file, 
   }
 
-  call PreparePlinkUnsupervised{
+  call RunScopeUnsupervised{    
     input:
         bed_file = ConvertPgenToBed.out_bed,
         bim_file = ConvertPgenToBed.out_bim,
         fam_file = ConvertPgenToBed.out_fam,
-        long_range_ld_file = long_range_ld_file,
-        plink2_LD_filter_option = plink2_LD_filter_option
-  }
-
-  call RunScopeUnsupervised{    
-    input:
-        bed_file = PreparePlinkUnsupervised.out_bed,
-        bim_file = PreparePlinkUnsupervised.out_bim,
-        fam_file = PreparePlinkUnsupervised.out_fam,
         K = K,
         output_string = target_prefix,
         seed = seed
@@ -166,10 +157,10 @@ task PreparePlink{
 
   Int disk_size = ceil(size([pgen_file, psam_file, pvar_file], "GB")  * 2) + 20
 
-  String new_pgen = chromosome + "_maf.pgen"
-  String new_pvar = chromosome + "_maf.pvar"
-  String new_psam = chromosome + "_maf.psam"
-  String out_prefix = chromosome + "_maf"
+  String new_pgen = chromosome + ".pgen"
+  String new_pvar = chromosome + "pvar"
+  String new_psam = chromosome + ".psam"
+  String out_prefix = chromosome 
 
 
   command {
@@ -183,8 +174,29 @@ task PreparePlink{
       --set-all-var-ids chr@:#:\$r:\$a \
       --new-id-max-allele-len 1000 \
       --make-pgen \
-      --out ~{out_prefix}
+      --out maf_filtered}
+
+    plink2 \
+        --pgen maf_filtered.pgen \
+        --pvar maf_filtered.pvar \
+        --psam maf_filtered.sam \
+        --exclude range ~{long_range_ld_file} \
+        --make-bed \
+        --out maf_filtered_longrange
     
+    plink2 \
+      --pgen maf_filtered_longrange.pgen \
+      --pvar maf_filtered_longrange.pvar \
+      --psam maf_filtered_longrange.psam \
+      ~{plink2_LD_filter_option}
+
+    plink2 \
+        --bed maf_filtered_longrange.pgen \
+        --bim maf_filtered_longrange.pvar \
+        --fam maf_filtered_longrange.psam \
+        --extract plink2.prune.in \
+        --make-bed \
+        --out ~{out_prefix}
   }
 
   runtime {
@@ -201,68 +213,6 @@ task PreparePlink{
   }
 }
 
-
-task PreparePlinkUnsupervised{
-  input {
-    File bed_file
-    File bim_file
-    File fam_file 
-
-    File long_range_ld_file
-    String? plink2_LD_filter_option = "--indep-pairwise 50000 80 0.1"
-    String? out_string = "ld_filtered"
-
-    Int memory_gb = 20
-
-    String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
-  }
-
-  Int disk_size = ceil(size([bed_file, bim_file, fam_file], "GB")  * 2) + 20
-
-  String new_bed = out_string + ".bed"
-  String new_bim = out_string + ".bim"
-  String new_fam= out_string + ".fam"
-  String out_prefix = out_string
-
-
-  command {
-    
-    plink2 \
-        --bed ~{bed_file} \
-        --bim ~{bim_file} \
-        --fam ~{fam_file} \
-        --exclude range ~{long_range_ld_file} \
-        --make-bed \
-        --out maf_filtered_longrange
-    
-    plink2 \
-      --bed maf_filtered_longrange.bed \
-      --bim maf_filtered_longrange.bim \
-      --fam maf_filtered_longrange.fam \
-      ~{plink2_LD_filter_option}
-
-    plink2 \
-        --bed maf_filtered_longrange.bed \
-        --bim maf_filtered_longrange.bim \
-        --fam maf_filtered_longrange.fam \
-        --extract plink2.prune.in \
-        --make-bed \
-        --out ~{out_prefix}
-  }
-
-  runtime {
-    docker: docker
-    preemptible: 1
-    disks: "local-disk " + disk_size + " HDD"
-    memory: memory_gb + " GiB"
-  }
-
-  output {
-    File out_bed = new_bed
-    File out_bim = new_bim
-    File out_fam = new_fam
-  }
-}
 
 task QCAllelesBim{
     input {
