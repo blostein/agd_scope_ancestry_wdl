@@ -194,9 +194,9 @@ task PreparePlink{
       ~{plink2_LD_filter_option}
 
     plink2 \
-        --bed maf_filtered_longrange.pgen \
-        --bim maf_filtered_longrange.pvar \
-        --fam maf_filtered_longrange.psam \
+        --pgen maf_filtered_longrange.pgen \
+        --pvar maf_filtered_longrange.pvar \
+        --psam maf_filtered_longrange.psam \
         --extract plink2.prune.in \
         --make-pgen \
         --out ~{out_prefix}
