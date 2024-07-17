@@ -149,6 +149,9 @@ task PreparePlink{
     String chromosome
 
     String? plink2_maf_filter = "--maf 0.01"
+    String? plink2_LD_filter_option = "--indep-pairwise 50000 80 0.1"
+    File long_range_ld_file
+
 
     Int memory_gb = 20
 
