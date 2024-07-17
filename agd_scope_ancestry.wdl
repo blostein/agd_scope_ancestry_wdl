@@ -164,7 +164,7 @@ task PreparePlink{
   Int disk_size = ceil(size([pgen_file, psam_file, pvar_file], "GB")  * 2) + 20
 
   String new_pgen = chromosome + ".pgen"
-  String new_pvar = chromosome + "pvar"
+  String new_pvar = chromosome + ".pvar"
   String new_psam = chromosome + ".psam"
   String out_prefix = chromosome 
 
