@@ -174,8 +174,8 @@ task PreparePlink{
       --set-all-var-ids chr@:#:\$r:\$a \
       --new-id-max-allele-len 1000 \
       --make-pgen \
-      --out maf_filtered}
-
+      --out maf_filtered
+      
     plink2 \
         --pgen maf_filtered.pgen \
         --pvar maf_filtered.pvar \
