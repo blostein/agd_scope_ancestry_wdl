@@ -182,7 +182,7 @@ task PreparePlink{
     plink2 \
         --pgen maf_filtered.pgen \
         --pvar maf_filtered.pvar \
-        --psam maf_filtered.sam \
+        --psam maf_filtered.psam \
         --exclude range ~{long_range_ld_file} \
         --make-bed \
         --out maf_filtered_longrange
