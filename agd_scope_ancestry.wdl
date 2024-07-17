@@ -184,7 +184,7 @@ task PreparePlink{
         --pvar maf_filtered.pvar \
         --psam maf_filtered.psam \
         --exclude range ~{long_range_ld_file} \
-        --make-bed \
+        --make-pgen \
         --out maf_filtered_longrange
     
     plink2 \
@@ -198,7 +198,7 @@ task PreparePlink{
         --bim maf_filtered_longrange.pvar \
         --fam maf_filtered_longrange.psam \
         --extract plink2.prune.in \
-        --make-bed \
+        --make-pgen \
         --out ~{out_prefix}
   }
 
