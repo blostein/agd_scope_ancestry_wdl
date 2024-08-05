@@ -3,3 +3,6 @@ workflows:
   - subclass: WDL
     primaryDescriptorPath: /agd_scope_ancestry.wdl
     name: agd_scope_ancestry
+  -subclass: WDL
+    primaryDescriptorPath: /tgp_calculate_within_frqs.wdl
+    name: tgp_calculate_within_frqs

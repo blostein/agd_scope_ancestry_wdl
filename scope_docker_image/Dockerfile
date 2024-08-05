@@ -7,7 +7,7 @@ WORKDIR /usr/
 #install needed dependencies
 RUN set -ex;                                                                      \
     apt-get update -y;                                                               \
-    apt-get install -y g++ cmake make 
+    apt-get install -y g++ cmake make;
 
 # copy the SCOPE source code to the docker image 
 COPY SCOPE/ /usr/SCOPE/
@@ -23,6 +23,11 @@ RUN set -ex;                                                                    
 # The second stage will install the runtime dependencies only and copy
 # the compiled executables
 FROM debian:buster AS runtime
+
+#install gawk 
+RUN set -ex;                                                                      \
+    apt-get update -y;                                                               \
+    apt-get install -y gawk   
 
 COPY --from=builder /usr/SCOPE/build/scope /usr/local/bin/
 #copy examples for testing 
