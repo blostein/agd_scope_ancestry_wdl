@@ -226,10 +226,11 @@ task QCAllelesBim{
         File? freq_file
 
         String docker = "blosteinf/r_utils_terra:0.1"
+        Int memory_gb = 20
+
     }
 
     Int disk_size = ceil(size([bim_file, freq_file], "GB")  * 2) + 20
-    Int memory_gb = 20
 
     command {
         ls /home/r-environment/
